@@ -1,4 +1,4 @@
-# RMP Actividades (TFG)
+# RMP Actividades (Proyecto Integrado)
 
 ## Descripcion del proyecto
 Aplicacion full-stack para gestionar actividades de ocio. Incluye registro y login con JWT, roles de usuario ofertante/consumidor, creacion y gestion de actividades, inscripciones y validaciones. Backend en Node.js + Express + PostgreSQL y frontend en React (Vite) con Tailwind y Axios.
