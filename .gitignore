@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+Backend/node_modules/
+
+# Builds
+frontend/dist/
+Backend/dist/
+dist/
+dist-ssr/
+*.local
+
+# Environment
+.env
+*.env
+Backend/.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
