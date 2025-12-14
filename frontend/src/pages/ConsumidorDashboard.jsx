@@ -2,15 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
 import { clearSession, getStoredUser } from "../hooks/useAuth";
+import ManageAccountModal from "../components/ManageAccountModal";
 import logo from "../assets/logo.png";
 
 function ConsumidorDashboard() {
-  const [user] = useState(() => getStoredUser());
+  const [user, setUser] = useState(() => getStoredUser());
   const navigate = useNavigate();
   const [actividades, setActividades] = useState([]);
   const [inscripciones, setInscripciones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   const fetchActividades = async () => {
     try {
@@ -41,7 +43,7 @@ function ConsumidorDashboard() {
     }
     fetchActividades();
     fetchInscripciones();
-  }, [navigate, user?.idusuario, user]);
+  }, [navigate, user?.idusuario]);
 
   const handleInscribir = async (idactividad) => {
     setError("");
@@ -70,6 +72,16 @@ function ConsumidorDashboard() {
     navigate("/login", { replace: true });
   };
 
+  const handleAccountUpdated = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  const handleAccountDeleted = () => {
+    clearSession();
+    navigate("/login", { replace: true });
+  };
+
   if (!user) return null;
 
   const inscritosSet = new Set(inscripciones.map((i) => i.idactividad));
@@ -87,6 +99,12 @@ function ConsumidorDashboard() {
         </div>
         <div className="flex items-center gap-4 text-sm">
           <span className="text-slate-300">Hola, {user?.nombre || "consumidor"}</span>
+          <button
+            onClick={() => setShowAccountModal(true)}
+            className="rounded-md border border-slate-700 px-3 py-1 text-slate-200 transition hover:border-blue-500 hover:text-white"
+          >
+            Gestionar cuenta
+          </button>
           <button
             onClick={handleLogout}
             className="rounded-md border border-slate-700 px-3 py-1 text-slate-200 transition hover:border-blue-500 hover:text-white"
@@ -180,6 +198,15 @@ function ConsumidorDashboard() {
           </div>
         </section>
       </main>
+
+      {showAccountModal && (
+        <ManageAccountModal
+          user={user}
+          onClose={() => setShowAccountModal(false)}
+          onUpdated={handleAccountUpdated}
+          onDeleted={handleAccountDeleted}
+        />
+      )}
     </div>
   );
 }

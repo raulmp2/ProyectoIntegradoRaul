@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
 import { clearSession, getStoredUser } from "../hooks/useAuth";
+import ManageAccountModal from "../components/ManageAccountModal";
 import logo from "../assets/logo.png";
 
 const allowedTipos = [
@@ -18,7 +19,7 @@ const allowedTipos = [
 ];
 
 function OfertanteDashboard() {
-  const [user] = useState(() => getStoredUser());
+  const [user, setUser] = useState(() => getStoredUser());
   const navigate = useNavigate();
   const [actividades, setActividades] = useState([]);
   const [error, setError] = useState("");
@@ -36,6 +37,7 @@ function OfertanteDashboard() {
     horafin: "",
   });
   const [editErrors, setEditErrors] = useState({});
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   const toHHMM = (t) => (typeof t === "string" && t.length >= 5 ? t.slice(0, 5) : "");
 
@@ -73,9 +75,19 @@ function OfertanteDashboard() {
       }
     };
     fetchActividades();
-  }, [navigate, user, user?.idusuario, editing]);
+  }, [navigate, user?.idusuario, editing]);
 
   const handleLogout = () => {
+    clearSession();
+    navigate("/login", { replace: true });
+  };
+
+  const handleAccountUpdated = (updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  const handleAccountDeleted = () => {
     clearSession();
     navigate("/login", { replace: true });
   };
@@ -218,6 +230,12 @@ function OfertanteDashboard() {
         <div className="flex items-center gap-4 text-sm">
           <span className="text-slate-300">Hola, {user?.nombre || "ofertante"}</span>
           <button
+            onClick={() => setShowAccountModal(true)}
+            className="rounded-md border border-slate-700 px-3 py-1 text-slate-200 transition hover:border-blue-500 hover:text-white"
+          >
+            Gestionar cuenta
+          </button>
+          <button
             onClick={handleLogout}
             className="rounded-md border border-slate-700 px-3 py-1 text-slate-200 transition hover:border-blue-500 hover:text-white"
           >
@@ -300,7 +318,16 @@ function OfertanteDashboard() {
             )}
           </div>
         </section>
-      </main>
+        </main>
+
+      {showAccountModal && (
+        <ManageAccountModal
+          user={user}
+          onClose={() => setShowAccountModal(false)}
+          onUpdated={handleAccountUpdated}
+          onDeleted={handleAccountDeleted}
+        />
+      )}
 
       {editing && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-slate-950/80 px-4">
